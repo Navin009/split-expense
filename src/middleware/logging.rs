@@ -10,7 +10,7 @@ impl Fairing for LoggerFairing {
     fn info(&self) -> Info {
         Info {
             name: "Logger",
-            kind: Kind::Ignite | Kind::Liftoff,
+            kind: Kind::Response | Kind::Request,
         }
     }
 
