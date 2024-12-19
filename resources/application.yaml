@@ -1,0 +1,23 @@
+app:
+  name: "My Rust App"
+  version: "1.0.0"
+
+server:
+  authentication:
+    basic:
+      username: ${AUTH_USERNAME:admin}
+      password: ${AUTH_PASSWORD:password}
+
+database:
+  mongodb:
+    host: ${DATABASE_HOST:localhost}
+    port: ${DATABASE_PORT:27017}
+    user: ${DATABASE_USER:mongo}
+    password: ${DATABASE_PASSWORD:pass}
+
+logging:
+  level: "info"
+  file: "/var/log/my_rust_app.log"
+  formats:
+    - "json"
+    - "text"

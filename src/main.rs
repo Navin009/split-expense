@@ -24,8 +24,5 @@ fn rocket() -> Rocket<Build> {
     rocket::build()
         .manage(app_config)
         .attach(LoggerFairing)
-        .mount(
-            "/",
-            routes![handlers::ping::index, handlers::ping::get_data],
-        )
+        .mount("/", handlers::ping_routes())
 }
