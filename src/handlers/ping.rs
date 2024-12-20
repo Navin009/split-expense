@@ -1,5 +1,8 @@
+use log::info;
 use rocket::serde::json::Json;
 use serde::Serialize;
+
+use crate::guard::basic_auth::BasicAuth;
 
 #[derive(Serialize)]
 pub struct HealthResponse {
@@ -12,7 +15,8 @@ pub struct DbCheckResponse {
 }
 
 #[get("/ping")]
-pub fn ping() -> &'static str {
+pub fn ping(base: BasicAuth) -> &'static str {
+    info!("User: {}", base.username);
     "pong"
 }
 

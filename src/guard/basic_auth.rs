@@ -1,9 +1,10 @@
-use base64::decode as base64_decode;
-use rocket::http::Status;
-use rocket::outcome::Outcome;
-use rocket::request::FromRequest;
-use rocket::Request;
-use std::str;
+use core::str;
+
+use base64::{prelude::BASE64_STANDARD, Engine};
+use rocket::{
+    http::Status,
+    request::{FromRequest, Outcome},
+};
 
 #[derive(Debug)]
 pub struct BasicAuth {
@@ -15,11 +16,11 @@ pub struct BasicAuth {
 impl<'r> FromRequest<'r> for BasicAuth {
     type Error = std::io::Error;
 
-    async fn from_request(req: &'r rocket::Request<'r>) -> rocket::data::Outcome<'r, Self> {
+    async fn from_request(req: &'r rocket::Request<'_>) -> Outcome<Self, Self::Error> {
         if let Some(authorization) = req.headers().get_one("Authorization") {
             if authorization.starts_with("Basic ") {
                 let encoded = &authorization[6..]; // Remove "Basic " prefix
-                match base64_decode(encoded) {
+                match BASE64_STANDARD.decode(encoded) {
                     Ok(decoded_bytes) => {
                         if let Ok(decoded_str) = str::from_utf8(&decoded_bytes) {
                             let parts: Vec<&str> = decoded_str.split(':').collect();
@@ -36,7 +37,7 @@ impl<'r> FromRequest<'r> for BasicAuth {
             }
         }
 
-        Outcome::Failure((
+        Outcome::Error((
             Status::Unauthorized,
             std::io::Error::new(std::io::ErrorKind::Other, "Invalid credentials"),
         ))

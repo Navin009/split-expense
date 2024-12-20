@@ -9,6 +9,7 @@ use rocket::{Build, Rocket};
 mod config;
 mod handlers;
 mod middleware;
+mod guard;
 
 #[launch]
 fn rocket() -> Rocket<Build> {
