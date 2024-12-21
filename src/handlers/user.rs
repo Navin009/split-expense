@@ -1,3 +1,4 @@
+use log::error;
 use mongodb::{
     bson::{doc, oid::ObjectId},
     results::{InsertOneResult, UpdateResult},
@@ -6,7 +7,7 @@ use rocket::{serde::json::Json, State};
 
 use crate::{config::AppConfig, models::entity::User};
 
-#[post("/users", data = "<user>")]
+#[post("/user/v1/create", data = "<user>")]
 pub async fn create_user(
     state: &State<AppConfig>,
     user: Json<User>,
@@ -22,11 +23,14 @@ pub async fn create_user(
 
     match collection.insert_one(new_user).await {
         Ok(insert_result) => Ok(Json(insert_result)),
-        Err(_) => Err(rocket::http::Status::InternalServerError),
+        Err(error) => {
+            error!("Error creating user: {}", error);
+            Err(rocket::http::Status::InternalServerError)
+        }
     }
 }
 
-#[get("/users/<id>")]
+#[get("/user/v1/<id>")]
 pub async fn get_user_profile(
     state: &State<AppConfig>,
     id: String,
@@ -41,7 +45,7 @@ pub async fn get_user_profile(
     }
 }
 
-#[put("/users/<id>", data = "<user>")]
+#[put("/users/v1/update?<id>", data = "<user>")]
 pub async fn update_user_profile(
     state: &State<AppConfig>,
     id: String,

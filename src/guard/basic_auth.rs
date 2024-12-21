@@ -34,7 +34,15 @@ impl<'r> FromRequest<'r> for BasicAuth {
         };
 
         // Assuming AppConfig has a hashmap of valid usernames and passwords
-        let valid_credentials: BasicAuth = app_config.get_basic_auth().unwrap();
+        let valid_credentials = match app_config.get_basic_auth() {
+            Ok(credentials) => credentials,
+            Err(err) => {
+                return Outcome::Error((
+                    Status::InternalServerError,
+                    std::io::Error::new(std::io::ErrorKind::Other, err.to_string()),
+                ));
+            }
+        };
 
         if let Some(authorization) = req.headers().get_one("Authorization") {
             if authorization.starts_with("Basic ") {

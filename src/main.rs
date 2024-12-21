@@ -29,4 +29,7 @@ fn rocket() -> Rocket<Build> {
         .mount("/", handlers::ping_routes())
         .mount("/", handlers::user_routes())
         .mount("/", handlers::account_routes())
+        .mount("/", handlers::group_routes())
+        .mount("/", handlers::expense_routes())
+        .mount("/", handlers::notification_routes())
 }

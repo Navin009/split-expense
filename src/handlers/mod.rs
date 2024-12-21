@@ -1,9 +1,9 @@
 pub mod account;
 pub mod expense;
+pub mod group;
+pub mod notification;
 pub mod ping;
 pub mod user;
-pub mod notification;
-pub mod group;
 
 pub fn ping_routes() -> Vec<rocket::Route> {
     routes![
@@ -25,4 +25,25 @@ pub fn user_routes() -> Vec<rocket::Route> {
 
 pub fn account_routes() -> Vec<rocket::Route> {
     routes![account::deactivate_account, account::reactivate_account]
+}
+
+pub fn expense_routes() -> Vec<rocket::Route> {
+    routes![
+        expense::add_expense,
+        expense::edit_expense,
+        expense::delete_expense,
+        expense::settle_balance,
+        expense::split_expense
+    ]
+}
+
+pub fn notification_routes() -> Vec<rocket::Route> {
+    routes![
+        notification::add_notification,
+        notification::fetch_notifications
+    ]
+}
+
+pub fn group_routes() -> Vec<rocket::Route> {
+    routes![group::settle_group_balance, group::update_group_members]
 }

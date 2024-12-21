@@ -37,7 +37,8 @@ impl AppConfig {
 
         let client_options = ClientOptions::parse(&mongo_uri).await?;
         let client = Client::with_options(client_options)?;
-        Ok(client.database("url_shortener"))
+
+        Ok(client.database("split_expense"))
     }
 
     pub fn init_logger() {
@@ -73,14 +74,18 @@ impl AppConfig {
     pub fn get_basic_auth(&self) -> Result<BasicAuth, Box<dyn std::error::Error>> {
         let username = self
             .config
-            .get("basic_auth")
+            .get("server")
+            .and_then(|server| server.get("authentication"))
+            .and_then(|auth| auth.get("basic"))
             .and_then(|auth| auth.get("username"))
             .and_then(|u| u.as_str())
             .ok_or("Missing or invalid 'username' field")?;
 
         let password = self
             .config
-            .get("basic_auth")
+            .get("server")
+            .and_then(|server| server.get("authentication"))
+            .and_then(|auth| auth.get("basic"))
             .and_then(|auth| auth.get("password"))
             .and_then(|p| p.as_str())
             .ok_or("Missing or invalid 'password' field")?;
