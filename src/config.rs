@@ -6,8 +6,11 @@ use regex::Regex;
 use serde_yaml::Value;
 use std::{collections::HashMap, env, fs::File, io::Read};
 
+use crate::guard::basic_auth::BasicAuth;
+
 pub struct AppConfig {
     pub mongodb: Database,
+    pub config: HashMap<String, Value>,
 }
 
 impl AppConfig {
@@ -18,7 +21,7 @@ impl AppConfig {
 
         let mongodb = AppConfig::init_db(&config).await?;
 
-        Ok(AppConfig { mongodb })
+        Ok(AppConfig { mongodb, config })
     }
 
     pub async fn init_db(config: &HashMap<String, Value>) -> mongodb::error::Result<Database> {
@@ -65,5 +68,27 @@ impl AppConfig {
             env::var(var_name).unwrap_or_else(|_| default_value.to_string())
         })
         .to_string()
+    }
+
+    pub fn get_basic_auth(&self) -> Result<BasicAuth, Box<dyn std::error::Error>> {
+        let username = self
+            .config
+            .get("basic_auth")
+            .and_then(|auth| auth.get("username"))
+            .and_then(|u| u.as_str())
+            .ok_or("Missing or invalid 'username' field")?;
+
+        let password = self
+            .config
+            .get("basic_auth")
+            .and_then(|auth| auth.get("password"))
+            .and_then(|p| p.as_str())
+            .ok_or("Missing or invalid 'password' field")?;
+
+        // Return the BasicAuth struct
+        Ok(BasicAuth {
+            username: username.to_string(),
+            password: password.to_string(),
+        })
     }
 }

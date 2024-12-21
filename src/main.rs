@@ -7,9 +7,10 @@ use middleware::logging::LoggerFairing;
 use rocket::{Build, Rocket};
 
 mod config;
+mod guard;
 mod handlers;
 mod middleware;
-mod guard;
+mod models;
 
 #[launch]
 fn rocket() -> Rocket<Build> {
@@ -26,4 +27,6 @@ fn rocket() -> Rocket<Build> {
         .manage(app_config)
         .attach(LoggerFairing)
         .mount("/", handlers::ping_routes())
+        .mount("/", handlers::user_routes())
+        .mount("/", handlers::account_routes())
 }
