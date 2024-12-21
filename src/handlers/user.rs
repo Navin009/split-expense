@@ -1,4 +1,4 @@
-use log::error;
+use log::{error, info};
 use mongodb::{
     bson::{doc, oid::ObjectId},
     results::{InsertOneResult, UpdateResult},
@@ -20,6 +20,15 @@ pub async fn create_user(
         email: user.email.clone(),
         password: user.password.clone(),
     };
+
+    match state.mongodb.list_collection_names().await {
+        Ok(collections) => {
+            info!("Existing collections: {:#?}", collections);
+        }
+        Err(error) => {
+            error!("Error listing collections: {}", error);
+        }
+    }
 
     match collection.insert_one(new_user).await {
         Ok(insert_result) => Ok(Json(insert_result)),
