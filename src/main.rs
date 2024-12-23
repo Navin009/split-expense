@@ -2,7 +2,6 @@
 extern crate rocket;
 
 use crate::config::AppConfig;
-use log::info;
 use middleware::logging::LoggerFairing;
 use rocket::{Build, Rocket};
 
@@ -13,15 +12,10 @@ mod middleware;
 mod models;
 
 #[launch]
-fn rocket() -> Rocket<Build> {
+async fn rocket() -> Rocket<Build> {
     AppConfig::init_logger();
 
-    let app_config = rocket::tokio::runtime::Runtime::new()
-        .unwrap()
-        .block_on(AppConfig::new())
-        .unwrap();
-
-    info!("Rocket app is launching");
+    let app_config = AppConfig::new().await.unwrap();
 
     rocket::build()
         .manage(app_config)
