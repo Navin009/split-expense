@@ -5,10 +5,11 @@ use mongodb::{
 };
 use rocket::{serde::json::Json, State};
 
-use crate::{config::AppConfig, models::entity::User};
+use crate::{config::AppConfig, guard::jwt_auth::JwtAuth, models::entity::User};
 
 #[post("/user/v1/create", data = "<user>")]
 pub async fn create_user(
+    auth: JwtAuth,
     state: &State<AppConfig>,
     user: Json<User>,
 ) -> Result<Json<InsertOneResult>, rocket::http::Status> {
@@ -54,7 +55,7 @@ pub async fn get_user_profile(
     }
 }
 
-#[put("/users/v1/update?<id>", data = "<user>")]
+#[put("/user/v1/update?<id>", data = "<user>")]
 pub async fn update_user_profile(
     state: &State<AppConfig>,
     id: String,

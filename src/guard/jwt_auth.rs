@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 
 // Define the structure of your claims
 #[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String, // Subject of the token (usually user id)
-    exp: usize,  // Expiration time (in seconds since epoch)
+pub struct Claims {
+    pub sub: String, // Subject of the token (usually user id)
+    pub exp: usize,  // Expiration time (in seconds since epoch)
 }
 
 // Define a struct for the JWT guard

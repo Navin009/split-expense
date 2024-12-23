@@ -1,6 +1,7 @@
 pub mod account;
 pub mod expense;
 pub mod group;
+pub mod login;
 pub mod notification;
 pub mod ping;
 pub mod user;
@@ -46,4 +47,8 @@ pub fn notification_routes() -> Vec<rocket::Route> {
 
 pub fn group_routes() -> Vec<rocket::Route> {
     routes![group::settle_group_balance, group::update_group_members]
+}
+
+pub fn login_routes() -> Vec<rocket::Route> {
+    routes![login::login]
 }
