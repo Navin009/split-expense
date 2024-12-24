@@ -1,3 +1,4 @@
+use mongodb::bson::doc;
 use rocket::{serde::json::Json, State};
 use serde::Serialize;
 
@@ -32,8 +33,8 @@ pub async fn metrics() -> String {
 
 #[get("/db-check")]
 pub async fn db_check(state: &State<AppConfig>) -> Json<DbCheckResponse> {
-    // TODO Check all databases connection
-    let database_connected = true; // Replace with actual connection logic
+    let database_connected = state.mongodb.run_command(doc! {"ping": 1}).await.is_ok();
+
     Json(DbCheckResponse { database_connected })
 }
 

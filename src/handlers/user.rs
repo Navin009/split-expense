@@ -15,6 +15,7 @@ pub async fn create_user(
 ) -> Result<Json<InsertOneResult>, rocket::http::Status> {
     let collection = state.mongodb.collection::<User>("users");
 
+
     let new_user = User {
         id: None,
         name: user.name.clone(),
