@@ -40,8 +40,8 @@ impl<'r> FromRequest<'r> for JwtAuth {
                 let token = &authorization[7..]; // Remove "Bearer " prefix
                 match authenticator.validate_jwt(token) {
                     Ok(claims) => Outcome::Success(JwtAuth {
-                        principal: claims,
                         customer_no: claims.sub.clone(),
+                        principal: claims,
                     }),
                     Err(_) => Outcome::Error((
                         Status::Unauthorized,

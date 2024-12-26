@@ -36,7 +36,7 @@ pub async fn db_check(state: &State<AppConfig>) -> Json<DbCheckResponse> {
     let database_connected = state.mongodb.run_command(doc! {"ping": 1}).await.is_ok();
 
     Json(DbCheckResponse { database_connected })
-}>
+}
 
 #[get("/prometheus")]
 pub async fn prometheus() -> String {
