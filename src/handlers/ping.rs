@@ -1,6 +1,9 @@
+use std::time::Duration;
+
 use mongodb::bson::doc;
 use rocket::{serde::json::Json, State};
 use serde::Serialize;
+use tokio::time::timeout;
 
 use crate::config::AppConfig;
 
@@ -33,8 +36,18 @@ pub async fn metrics() -> String {
 
 #[get("/db-check")]
 pub async fn db_check(state: &State<AppConfig>) -> Json<DbCheckResponse> {
-    let database_connected = state.mongodb.run_command(doc! {"ping": 1}).await.is_ok();
+    let timeout_duration = Duration::new(5, 0); // 5 seconds
+    let result = timeout(
+        timeout_duration,
+        state.mongodb.run_command(doc! {"ping": 1}),
+    )
+    .await;
 
+    let database_connected = match result {
+        Ok(Ok(_)) => true,   // Command succeeded within the timeout
+        Ok(Err(_)) => false, // Command failed (e.g., MongoDB not reachable)
+        Err(_) => false,     // Command timed out
+    };
     Json(DbCheckResponse { database_connected })
 }
 

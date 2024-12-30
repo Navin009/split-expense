@@ -13,6 +13,7 @@ pub struct Claims {
 }
 
 // Define a struct for the JWT guard
+#[derive(Debug, Clone)]
 pub struct JwtAuth {
     pub principal: Claims,
     pub customer_no: String,

@@ -1,7 +1,7 @@
-use log::{error, info};
+use log::error;
 use mongodb::{
     bson::{doc, oid::ObjectId},
-    results::{InsertOneResult, UpdateResult},
+    results::UpdateResult,
 };
 use rocket::{serde::json::Json, State};
 
@@ -12,27 +12,19 @@ pub async fn create_user(
     auth: JwtAuth,
     state: &State<AppConfig>,
     user: Json<User>,
-) -> Result<Json<InsertOneResult>, rocket::http::Status> {
+) -> Result<Json<UpdateResult>, rocket::http::Status> {
     let collection = state.mongodb.collection::<User>("users");
 
-
-    let new_user = User {
-        id: None,
-        name: user.name.clone(),
-        email: user.email.clone(),
-        password: user.password.clone(),
+    let upsert_doc = doc! {
+        "name": &user.name,
+        "password": &user.password,
+        "created_at": chrono::Utc::now().to_rfc3339(),
     };
 
-    match state.mongodb.list_collection_names().await {
-        Ok(collections) => {
-            info!("Existing collections: {:#?}", collections);
-        }
-        Err(error) => {
-            error!("Error listing collections: {}", error);
-        }
-    }
-
-    match collection.insert_one(new_user).await {
+    match collection
+        .update_one(doc! { "email": &user.email }, upsert_doc)
+        .await
+    {
         Ok(insert_result) => Ok(Json(insert_result)),
         Err(error) => {
             error!("Error creating user: {}", error);
